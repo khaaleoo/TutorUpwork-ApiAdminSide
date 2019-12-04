@@ -2,29 +2,28 @@ const passport = require('passport');
 const passportJWT = require("passport-jwt");
 const bcrypt = require('bcrypt');
 
-const LocalStrategy = require('passport-local').Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 
 const ExtractJWT = passportJWT.ExtractJwt;
 const JWTStrategy = passportJWT.Strategy;
 
-const AdminModel = require('../models/admins')
+const AdminModel = require("../models/admins");
 
-var secretKey = 'nodeRestApi';
+var secretKey = "nodeRestApi";
 module.exports = {
-    'secretKey': secretKey
-}
+  secretKey: secretKey
+};
 
 // used to serialize the admin for the session
-passport.serializeUser(function (admin, done) {
-    done(null, admin.id);
+passport.serializeUser(function(admin, done) {
+  done(null, admin.id);
 });
 // used to deserialize the user
-passport.deserializeUser(function (id, done) {
-    AdminModel.findById(id, function (err, admin) {
-        done(err, admin);
-    });
+passport.deserializeUser(function(id, done) {
+  AdminModel.findById(id, function(err, admin) {
+    done(err, admin);
+  });
 });
-
 
 passport.use('local-login', new LocalStrategy({
     usernameField: 'email',
@@ -54,8 +53,27 @@ passport.use('local-login', new LocalStrategy({
             .catch(err => {
                 return cb(err);
             });
+          } else {
+            bcrypt.compare(password, user.password, function(err, res) {
+              if (err) return cb(err);
+              if (res === false) {
+                return cb(null, false, {
+                  message: "Password was wrong"
+                });
+              } else {
+                return cb(null, user, {
+                  message: "Logged In Successfully"
+                });
+              }
+            });
+          }
+        })
+        .catch(err => {
+          return cb(err);
+        });
     }
-));
+  )
+);
 
 passport.use('jwt', new JWTStrategy({
     secretOrKey: secretKey,

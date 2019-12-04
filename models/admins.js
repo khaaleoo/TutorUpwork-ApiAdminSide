@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+var mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 var adminSchema = mongoose.Schema({
