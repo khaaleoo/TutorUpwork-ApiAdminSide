@@ -53,24 +53,6 @@ passport.use('local-login', new LocalStrategy({
             .catch(err => {
                 return cb(err);
             });
-          } else {
-            bcrypt.compare(password, user.password, function(err, res) {
-              if (err) return cb(err);
-              if (res === false) {
-                return cb(null, false, {
-                  message: "Password was wrong"
-                });
-              } else {
-                return cb(null, user, {
-                  message: "Logged In Successfully"
-                });
-              }
-            });
-          }
-        })
-        .catch(err => {
-          return cb(err);
-        });
     }
   )
 );
