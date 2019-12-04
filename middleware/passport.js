@@ -1,78 +1,85 @@
-const passport    = require('passport');
+const passport = require("passport");
 const passportJWT = require("passport-jwt");
-const bcrypt = require('bcrypt'); 
+const bcrypt = require("bcrypt");
 
-const LocalStrategy = require('passport-local').Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 
 const ExtractJWT = passportJWT.ExtractJwt;
-const JWTStrategy   = passportJWT.Strategy;
+const JWTStrategy = passportJWT.Strategy;
 
-const AdminModel = require('../models/admins')
+const AdminModel = require("../models/admins");
 
-var secretKey = 'nodeRestApi';
+var secretKey = "nodeRestApi";
 module.exports = {
-    'secretKey': secretKey
-}
+  secretKey: secretKey
+};
 
 // used to serialize the admin for the session
-passport.serializeUser(function (admin, done) {
-    done(null, admin.id);
+passport.serializeUser(function(admin, done) {
+  done(null, admin.id);
 });
 // used to deserialize the user
-passport.deserializeUser(function (id, done) {
-    AdminModel.findById(id, function (err, admin) {
-        done(err, admin);
-    });
+passport.deserializeUser(function(id, done) {
+  AdminModel.findById(id, function(err, admin) {
+    done(err, admin);
+  });
 });
 
-
-passport.use('local-login', new LocalStrategy({
-        usernameField: 'email',
-        passwordField: 'password'
+passport.use(
+  "local-login",
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password"
     },
-    function (email, password, cb) {
-            return AdminModel.findOne({email})
-                .then(user => {
-                    if (!user) {
-                        return cb(null, false, {message: 'Email have not been registed before.'});
-                    }
-                    else{
-                        bcrypt.compare(password, user.password, function(err, res) {
-                            if (err) return cb(err);
-                            if (res === false) {
-                                return cb(null, false, {
-                                    message: 'Password was wrong'
-                                });
-                            } else {
-                                return cb(null, user, {
-                                    message: 'Logged In Successfully'
-                                });
-                            }
-                        });                      
-                    }
-                })
-                .catch(err => {
-                    return cb(err);
-            });
-    }
-));
-
-passport.use(new JWTStrategy({
-    secretOrKey : secretKey,
-    jwtFromRequest : ExtractJWT.fromHeader('secret_token')
-  }, async (token, done) => {
-    try {
-        return AdminModel.findById(token.user._id)
+    function(email, password, cb) {
+      return AdminModel.findOne({ email })
         .then(user => {
-            if (!user) {
-                return done(null, false, {message: "Something's wrong"});
-            }
-            else {
-                return done(null,user)
-            }
+          if (!user) {
+            return cb(null, false, {
+              message: "Email have not been registed before."
+            });
+          } else {
+            bcrypt.compare(password, user.password, function(err, res) {
+              if (err) return cb(err);
+              if (res === false) {
+                return cb(null, false, {
+                  message: "Password was wrong"
+                });
+              } else {
+                return cb(null, user, {
+                  message: "Logged In Successfully"
+                });
+              }
+            });
+          }
         })
-    //   return done(null, token.user);
-    } catch (error) {
-      done(error);
+        .catch(err => {
+          return cb(err);
+        });
     }
-  }));
+  )
+);
+
+passport.use(
+  new JWTStrategy(
+    {
+      secretOrKey: secretKey,
+      jwtFromRequest: ExtractJWT.fromHeader("secret_token")
+    },
+    async (token, done) => {
+      try {
+        return AdminModel.findById(token.user._id).then(user => {
+          if (!user) {
+            return done(null, false, { message: "Something's wrong" });
+          } else {
+            return done(null, user);
+          }
+        });
+        //   return done(null, token.user);
+      } catch (error) {
+        done(error);
+      }
+    }
+  )
+);
