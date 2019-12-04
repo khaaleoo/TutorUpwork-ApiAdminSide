@@ -21,13 +21,13 @@ var adminSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        trim: true, 
+        trim: true,
         required: true
     },
 });
 
 // hash user password before saving into database
-adminSchema.pre('save', function(next){
+adminSchema.pre('save', function (next) {
     this.password = bcrypt.hashSync(this.password, saltRounds);
     next();
 });
@@ -37,6 +37,6 @@ adminSchema.pre('save', function(next){
 //     return bcrypt.compareSync(password, this.password);
 // };
 
-const User = mongoose.model('admin',adminSchema);
+const User = mongoose.model('admin', adminSchema);
 
 module.exports = User;
