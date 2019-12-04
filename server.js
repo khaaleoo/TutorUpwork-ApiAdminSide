@@ -1,5 +1,6 @@
 const express = require('express');
 const logger = require('morgan');
+// const index = require('./routes/index')
 const admins = require('./routes/admins');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
@@ -31,6 +32,7 @@ app.use(function(req, res, next) {
 });
 
 // public route
+// app.use('./', index);
 app.use('/admins',admins);
 
 // private route

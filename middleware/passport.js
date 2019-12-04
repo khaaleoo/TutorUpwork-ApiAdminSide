@@ -1,6 +1,6 @@
-const passport = require("passport");
+const passport = require('passport');
 const passportJWT = require("passport-jwt");
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 
 const LocalStrategy = require("passport-local").Strategy;
 
@@ -25,19 +25,33 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-passport.use(
-  "local-login",
-  new LocalStrategy(
-    {
-      usernameField: "email",
-      passwordField: "password"
-    },
-    function(email, password, cb) {
-      return AdminModel.findOne({ email })
-        .then(user => {
-          if (!user) {
-            return cb(null, false, {
-              message: "Email have not been registed before."
+passport.use('local-login', new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+},
+    function (email, password, cb) {
+        return AdminModel.findOne({ email })
+            .then(user => {
+                if (!user) {
+                    return cb(null, false, { message: 'Email have not been registed before.' });
+                }
+                else {
+                    bcrypt.compare(password, user.password, function (err, res) {
+                        if (err) return cb(err);
+                        if (res === false) {
+                            return cb(null, false, {
+                                message: 'Password was wrong'
+                            });
+                        } else {
+                            return cb(null, user, {
+                                message: 'Logged In Successfully'
+                            });
+                        }
+                    });
+                }
+            })
+            .catch(err => {
+                return cb(err);
             });
           } else {
             bcrypt.compare(password, user.password, function(err, res) {
@@ -61,25 +75,16 @@ passport.use(
   )
 );
 
-passport.use(
-  new JWTStrategy(
-    {
-      secretOrKey: secretKey,
-      jwtFromRequest: ExtractJWT.fromHeader("secret_token")
-    },
-    async (token, done) => {
-      try {
-        return AdminModel.findById(token.user._id).then(user => {
-          if (!user) {
-            return done(null, false, { message: "Something's wrong" });
-          } else {
-            return done(null, user);
-          }
-        });
-        //   return done(null, token.user);
-      } catch (error) {
+passport.use('jwt', new JWTStrategy({
+    secretOrKey: secretKey,
+    jwtFromRequest: ExtractJWT.fromHeader('secret_token')
+}, async (token, done) => {
+    try {
+        console.log("xac thuc thanh cong: ", token)
+        return done(null, token.admin.role);
+    } catch (error) {
         done(error);
-      }
     }
-  )
-);
+    console.log("cuoi cung")
+}
+));
