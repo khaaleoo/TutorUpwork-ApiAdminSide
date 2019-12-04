@@ -57,22 +57,16 @@ passport.use('local-login', new LocalStrategy({
     }
 ));
 
-passport.use(new JWTStrategy({
+passport.use('jwt', new JWTStrategy({
     secretOrKey : secretKey,
     jwtFromRequest : ExtractJWT.fromHeader('secret_token')
   }, async (token, done) => {
     try {
-        return AdminModel.findById(token.user._id)
-        .then(user => {
-            if (!user) {
-                return done(null, false, {message: "Something's wrong"});
-            }
-            else {
-                return done(null,user)
-            }
-        })
-    //   return done(null, token.user);
+        console.log("xac thuc thanh cong: ", token)
+        return done(null, token.admin.role);
     } catch (error) {
       done(error);
     }
-  }));
+    console.log("cuoi cung")
+    }
+));
