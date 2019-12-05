@@ -37,7 +37,7 @@ module.exports = {
                 }
                 const body = { _id: admin._id, role: admin.role };
                 const token = jwt.sign({ admin: body }, secretKey.secretKey, { expiresIn: '1h' });
-                return res.json({ status: "Login successful", token });
+                return res.json({ status: "Login successful", token: token, role: admin.role });
             });
         })(req, res);
     },

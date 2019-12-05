@@ -11,18 +11,18 @@ const AdminModel = require("../models/admins");
 
 var secretKey = "nodeRestApi";
 module.exports = {
-  secretKey: secretKey
+    secretKey: secretKey
 };
 
 // used to serialize the admin for the session
-passport.serializeUser(function(admin, done) {
-  done(null, admin.id);
+passport.serializeUser(function (admin, done) {
+    done(null, admin.id);
 });
 // used to deserialize the user
-passport.deserializeUser(function(id, done) {
-  AdminModel.findById(id, function(err, admin) {
-    done(err, admin);
-  });
+passport.deserializeUser(function (id, done) {
+    AdminModel.findById(id, function (err, admin) {
+        done(err, admin);
+    });
 });
 
 passport.use('local-login', new LocalStrategy({
@@ -54,7 +54,7 @@ passport.use('local-login', new LocalStrategy({
                 return cb(err);
             });
     }
-  )
+)
 );
 
 passport.use('jwt', new JWTStrategy({
