@@ -66,11 +66,11 @@ module.exports = {
             adminModel.find({ role: { $nin: ["master"] } }, (err, res1) => {
                 //  console.log("responeeee: ", res)
                 adminsList = Object.assign(res1, adminsList)
-                return res.status(400).json({
+                return res.status(200).json({
                     status: "Get admins list success",
                     list: adminsList,
                 });
-            });
+            }).maxTimeMS(0);
 
         })(req, res);
     },
