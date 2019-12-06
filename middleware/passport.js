@@ -63,7 +63,7 @@ passport.use('jwt', new JWTStrategy({
 }, async (token, done) => {
     try {
         console.log("xac thuc thanh cong: ", token)
-        return done(null, token.admin.role);
+        return done(null, token.role);
     } catch (error) {
         done(error);
     }

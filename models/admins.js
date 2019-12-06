@@ -22,7 +22,6 @@ var adminSchema = mongoose.Schema({
     role: {
         type: String,
         trim: true,
-        required: true
     },
 });
 
