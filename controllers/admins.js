@@ -6,38 +6,62 @@ const bossInfo = require('../config/admin');
 
 module.exports = {
     create: function (req, res, next) {
-        adminModel.findOne({ email: req.body.email }, function (err, doc) {
-            if (err) throw err;
-            if (doc == null) {
-                adminModel.create({ name: req.body.name, email: req.body.email, password: req.body.password, role: req.body.role }, function (err) {
-                    if (err)
-                        next(err);
-                    else
-                        res.json({ status: "success", message: "Admin added successfully!!!", data: null });
-
+        passport.authenticate('jwt', { session: false }, (err, role) => {
+            if (role === false) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Unauthorized",
                 });
             }
-            else {
-                res.json({ status: "failed", message: "Failed to create new Admin, Email has been registed before.", data: null })
+            if (err) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Somthing wrong",
+                });
             }
-        })
+            if (role !== bossInfo.roleOfBoss) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Only Master can get admins list",
+                });
+            }
+            adminModel.findOne({ email: req.body.email }, function (err, doc) {
+                if (err) throw err;
+                if (doc == null) {
+                    adminModel.create({ name: req.body.name, email: req.body.email, password: req.body.password }, function (err) {
+                        if (err)
+                            next(err);
+                        else
+                            res.json({ status: "success", message: "Admin added successfully!!!" });
+
+                    });
+                }
+                else {
+                    res.json({ status: "failed", message: "Failed to create new Admin, Email has been registed before." })
+                }
+            })
+        })(req, res);
+
     },
     login: function (req, res) {
         passport.authenticate('local-login', { session: false }, (err, admin, info) => {
             if (err || !admin) {
                 return res.status(400).json({
-                    status: "Login failed",
+                    status: "failed",
                     message: info ? info.message : 'Login failed',
                 });
             }
 
             req.login(admin, { session: false }, (err) => {
                 if (err) {
-                    res.send(err);
+                    return res.status(400).json({
+                        status: "failed",
+                        message: err,
+                    });
                 }
-                const body = { _id: admin._id, role: admin.role };
-                const token = jwt.sign({ admin: body }, secretKey.secretKey, { expiresIn: '1h' });
-                return res.json({ status: "Login successful", token: token, role: admin.role });
+                console.log("role la : ", admin.role)
+                const token = jwt.sign({ _id: admin._id, role: admin.role }, secretKey.secretKey, { expiresIn: '1h' });
+                return res.json({ status: "success", token: token, role: admin.role });
             });
         })(req, res);
     },
@@ -45,19 +69,19 @@ module.exports = {
         passport.authenticate('jwt', { session: false }, (err, role) => {
             if (role === false) {
                 return res.status(400).json({
-                    status: "Get list admin failed",
+                    status: "failed",
                     message: "Unauthorized",
                 });
             }
             if (err) {
                 return res.status(400).json({
-                    status: "Get list admin failed",
+                    status: "failed",
                     message: "Somthing wrong",
                 });
             }
             if (role !== bossInfo.roleOfBoss) {
                 return res.status(400).json({
-                    status: "Get list admin failed",
+                    status: "failed",
                     message: "Only Master can get admins list",
                 });
             }
@@ -67,10 +91,10 @@ module.exports = {
                 //  console.log("responeeee: ", res)
                 adminsList = Object.assign(res1, adminsList)
                 return res.status(200).json({
-                    status: "Get admins list success",
+                    status: "success",
                     list: adminsList,
                 });
-            }).maxTimeMS(0);
+            });
 
         })(req, res);
     },
