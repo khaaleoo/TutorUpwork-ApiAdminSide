@@ -2,17 +2,17 @@ const passport = require('passport');
 const passportJWT = require("passport-jwt");
 const bcrypt = require('bcrypt');
 
-const LocalStrategy = require('passport-local').Strategy;
+const LocalStrategy = require("passport-local").Strategy;
 
 const ExtractJWT = passportJWT.ExtractJwt;
 const JWTStrategy = passportJWT.Strategy;
 
-const AdminModel = require('../models/admins')
+const AdminModel = require("../models/admins");
 
-var secretKey = 'nodeRestApi';
+var secretKey = "nodeRestApi";
 module.exports = {
-    'secretKey': secretKey
-}
+    secretKey: secretKey
+};
 
 // used to serialize the admin for the session
 passport.serializeUser(function (admin, done) {
@@ -24,7 +24,6 @@ passport.deserializeUser(function (id, done) {
         done(err, admin);
     });
 });
-
 
 passport.use('local-login', new LocalStrategy({
     usernameField: 'email',
@@ -55,7 +54,8 @@ passport.use('local-login', new LocalStrategy({
                 return cb(err);
             });
     }
-));
+)
+);
 
 passport.use('jwt', new JWTStrategy({
     secretOrKey: secretKey,
