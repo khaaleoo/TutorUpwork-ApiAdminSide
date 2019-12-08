@@ -98,4 +98,39 @@ module.exports = {
 
         })(req, res);
     },
+    remove: function (req, res) {
+        jwt.verify(req.headers.secret_token, secretKey.secretKey, (err, decoded) => {
+            if (err || decoded.role === false) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Unauthorized",
+                });
+            }
+
+            // bossInfo.roleOfBoss = 'master'
+            if (decoded.role !== bossInfo.roleOfBoss) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Only Master can remove other admin",
+                });
+            }
+
+            // only "role: master" can remove other admin
+            const id = req.query.id
+            adminModel.deleteOne({ _id: id }, (err) => {
+                //  console.log("responeeee: ", res)
+                if (err) {
+                    return res.status(400).json({
+                        status: "failed",
+                        message: err,
+                    });
+                }
+                return res.status(200).json({
+                    status: "success",
+                    message: "delete successful",
+                });
+            });
+        })
+
+    },
 }
