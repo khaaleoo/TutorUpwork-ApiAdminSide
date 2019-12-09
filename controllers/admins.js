@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const secretKey = require('../middleware/passport');
 const bossInfo = require('../config/admin');
+var _ = require('lodash');
 
 module.exports = {
     create: function (req, res, next) {
@@ -132,5 +133,67 @@ module.exports = {
             });
         })
 
+    },
+    changePassword: function (req, res) {
+        jwt.verify(req.headers.secret_token, secretKey.secretKey, (err, decoded) => {
+            if (err || decoded.role === false) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Unauthorized",
+                });
+            }
+
+            // bossInfo.roleOfBoss = 'master'
+            if (decoded.role !== bossInfo.roleOfBoss) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Only Master can change password other admin",
+                });
+            }
+
+            // only "role: master" can change password other admin
+            adminModel.findById(req.body.id, function (err, admin) {
+                if (err) {
+                    res.json({ status: "failed", message: err });
+                }
+                else {
+                    _.assign(admin, { password: req.body.password }); // update password
+                    admin.save(() => {
+                        res.json({ status: "success", message: "Change password successfully!!!" });
+                    })
+                }
+            })
+        })
+    },
+    updateInfo: function (req, res) {
+        jwt.verify(req.headers.secret_token, secretKey.secretKey, (err, decoded) => {
+            if (err || decoded.role === false) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Unauthorized",
+                });
+            }
+
+            // bossInfo.roleOfBoss = 'master'
+            if (decoded.role !== bossInfo.roleOfBoss) {
+                return res.status(400).json({
+                    status: "failed",
+                    message: "Only Master can update info other admin",
+                });
+            }
+
+            // only "role: master" can update info other admin
+            adminModel.findById(req.body.id, function (err, admin) {
+                if (err) {
+                    res.json({ status: "failed", message: err });
+                }
+                else {
+                    _.assign(admin, { email: req.body.email, name: req.body.name }); // update info admin
+                    admin.save(() => {
+                        res.json({ status: "success", message: "Change info successfully!!!" });
+                    })
+                }
+            })
+        })
     },
 }
