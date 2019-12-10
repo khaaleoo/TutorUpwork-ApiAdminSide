@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 // const index = require('./routes/index')
 const admins = require('./routes/admins');
+const skills = require('./routes/skills');
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 // const jwt = require('jsonwebtoken');
@@ -11,51 +12,53 @@ const app = express();
 
 const passport = require('passport');
 require('./middleware/passport')
-app.use(session({secret: 'iloveyou'})); // chuối bí mật đã mã hóa coookie
+app.use(session({ secret: 'iloveyou', saveUninitialized: true, resave: true, })); // chuối bí mật đã mã hóa coookie
 app.use(passport.initialize());
 app.use(passport.session());
 
 // connection to mongodb
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+mongoose.set('useCreateIndex', true);
 
 app.use(logger('dev'));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.get('/', function(req, res){
-res.json({"HKTeam" : "Server Admin UpTutor"});
+app.get('/', function (req, res) {
+  res.json({ "HKTeam": "Server Admin UpTutor" });
 });
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, secret_token");
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-    next();
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, secret_token");
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+  next();
 });
 
 // public route
 // app.use('./', index);
-app.use('/admins',admins);
+app.use('/admins', admins);
+app.use('/skills', skills);
 
 // private route
-app.get('/favicon.ico', function(req, res) {
-    res.sendStatus(204);
+app.get('/favicon.ico', function (req, res) {
+  res.sendStatus(204);
 });
 
 // express doesn't consider not found 404 as an error so we need to handle 404 explicitly
 // handle 404 error
-app.use(function(req, res, next) {
- let err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+app.use(function (req, res, next) {
+  let err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
 
 // handle errors
-app.use(function(err, req, res) {
- console.log(err);
- 
-  if(err.status === 404)
-   res.status(404).json({message: "Not found"});
-  else 
-    res.status(500).json({message: "Something looks wrong :( !!!"});
+app.use(function (err, req, res) {
+  console.log(err);
+
+  if (err.status === 404)
+    res.status(404).json({ message: "Not found" });
+  else
+    res.status(500).json({ message: "Something looks wrong :( !!!" });
 });
 
 // app.set( 'port', ( process.env.PORT || 5000 ));
