@@ -12,12 +12,13 @@ const app = express();
 
 const passport = require('passport');
 require('./middleware/passport')
-app.use(session({ secret: 'iloveyou' })); // chuối bí mật đã mã hóa coookie
+app.use(session({ secret: 'iloveyou', saveUninitialized: true, resave: true, })); // chuối bí mật đã mã hóa coookie
 app.use(passport.initialize());
 app.use(passport.session());
 
 // connection to mongodb
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+mongoose.set('useCreateIndex', true);
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -33,12 +33,12 @@ module.exports = {
                         if (err)
                             next(err);
                         else
-                            res.json({ status: "success", message: "Admin added successfully!!!" });
+                            return res.json({ status: "success", message: "Admin added successfully!!!" });
 
                     });
                 }
                 else {
-                    res.json({ status: "failed", message: "Failed to create new Admin, Email has been registed before." })
+                    return res.json({ status: "failed", message: "Failed to create new Admin, Email has been registed before." })
                 }
             })
         })(req, res);
@@ -154,12 +154,12 @@ module.exports = {
             // only "role: master" can change password other admin
             adminModel.findById(req.body.id, function (err, admin) {
                 if (err) {
-                    res.json({ status: "failed", message: err });
+                    return res.json({ status: "failed", message: err });
                 }
                 else {
                     _.assign(admin, { password: req.body.password }); // update password
                     admin.save(() => {
-                        res.json({ status: "success", message: "Change password successfully!!!" });
+                        return res.json({ status: "success", message: "Change password successfully!!!" });
                     })
                 }
             })
@@ -183,15 +183,12 @@ module.exports = {
             }
 
             // only "role: master" can update info other admin
-            adminModel.findById(req.body.id, function (err, admin) {
+            adminModel.findOneAndUpdate({ _id: req.body.id }, { email: req.body.email, name: req.body.name }, function (err) {
                 if (err) {
-                    res.json({ status: "failed", message: err });
+                    return res.status(400).json({ status: "failed", message: err });
                 }
                 else {
-                    _.assign(admin, { email: req.body.email, name: req.body.name }); // update info admin
-                    admin.save(() => {
-                        res.json({ status: "success", message: "Change info successfully!!!" });
-                    })
+                    return res.status(200).json({ status: "success", message: "Change info successfully!!!" });
                 }
             })
         })

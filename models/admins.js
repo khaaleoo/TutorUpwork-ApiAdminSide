@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+var beautifyUnique = require("mongoose-beautiful-unique-validation")
 
 var adminSchema = mongoose.Schema({
     password: {
@@ -12,7 +13,8 @@ var adminSchema = mongoose.Schema({
     email: {
         type: String,
         trim: true,
-        required: true
+        required: true,
+        unique: 'Two admin cannot share the same email'
     },
     name: {
         type: String,
@@ -24,6 +26,9 @@ var adminSchema = mongoose.Schema({
         trim: true,
     },
 });
+
+// enables beautifying
+adminSchema.plugin(beautifyUnique);
 
 // hash user password before saving into database
 adminSchema.pre('save', function (next) {
