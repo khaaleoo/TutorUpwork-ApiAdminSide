@@ -1,8 +1,11 @@
 const express = require('express');
 const logger = require('morgan');
+
 // const index = require('./routes/index')
 const admins = require('./routes/admins');
 const skills = require('./routes/skills');
+const users = require('./routes/users');
+
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
 // const jwt = require('jsonwebtoken');
@@ -37,6 +40,7 @@ app.use(function (req, res, next) {
 // app.use('./', index);
 app.use('/admins', admins);
 app.use('/skills', skills);
+app.use('/users', users);
 
 // private route
 app.get('/favicon.ico', function (req, res) {
