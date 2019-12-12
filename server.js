@@ -26,9 +26,9 @@ mongoose.set('useCreateIndex', true);
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.get('/', function (req, res) {
-  res.json({ "HKTeam": "Server Admin UpTutor" });
-});
+// app.get('/', function (req, res) {
+//   res.json({ "HKTeam": "Server Admin UpTutor" });
+// });
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, secret_token");
