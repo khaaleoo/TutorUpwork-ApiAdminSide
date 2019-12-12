@@ -1,7 +1,7 @@
 const express = require('express');
 const logger = require('morgan');
 
-// const index = require('./routes/index')
+const index = require('./src/index')
 const admins = require('./routes/admins');
 const skills = require('./routes/skills');
 const users = require('./routes/users');
@@ -37,7 +37,7 @@ app.use(function (req, res, next) {
 });
 
 // public route
-// app.use('./', index);
+app.use('/', index);
 app.use('/admins', admins);
 app.use('/skills', skills);
 app.use('/users', users);
