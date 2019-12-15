@@ -1,6 +1,7 @@
 const userModel = require('../models/users');
 const tutorModel = require('../models/tutors')
 const studentModel = require('../models/students')
+const contractModel = require('../models/contracts')
 
 const jwt = require('jsonwebtoken');
 const secretKey = require('../middleware/passport');
@@ -38,7 +39,7 @@ module.exports = {
         return function (req, res) {
             jwt.verify(req.headers.secret_token, secretKey.secretKey, (err) => {
                 if (err) {
-                    return res.status(400).json({
+                    return res.status(401).json({
                         status: "failed",
                         message: "Unauthorized",
                     });
@@ -69,17 +70,42 @@ module.exports = {
             })
         }
     },
-    block: function (req, res) {
+    contracts: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err) => {
             if (err) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
             }
 
-            const email = req.body.email
-            userModel.findOneAndUpdate({ email }, { valid: false }, (err1) => {
+            const idContractsList = req.query.list
+            contractModel.find({ id: { "$in": idContractsList } }, (err1, res1) => {
+                if (err1) {
+                    return res.status(400).json({
+                        status: "failed",
+                        message: err1,
+                    });
+                }
+                return res.status(200).json({
+                    status: "success",
+                    list: res1
+                });
+            });
+
+        })
+    },
+    block: function (req, res) {
+        jwt.verify(req.headers.secret_token, secretKey.secretKey, (err) => {
+            if (err) {
+                return res.status(401).json({
+                    status: "failed",
+                    message: "Unauthorized",
+                });
+            }
+
+            const id = req.body.id
+            userModel.findOneAndUpdate({ id }, { valid: false }, (err1) => {
                 if (err1) {
                     return res.status(400).json({
                         status: "failed",
@@ -97,14 +123,14 @@ module.exports = {
     unblock: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err) => {
             if (err) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
             }
 
-            const email = req.body.email
-            userModel.findOneAndUpdate({ email }, { valid: true }, (err1) => {
+            const id = req.body.id
+            userModel.findOneAndUpdate({ id }, { valid: true }, (err1) => {
                 if (err1) {
                     return res.status(400).json({
                         status: "failed",

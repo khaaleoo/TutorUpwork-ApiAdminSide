@@ -6,7 +6,7 @@ module.exports = {
     list: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err) => {
             if (err) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
@@ -32,7 +32,7 @@ module.exports = {
     create: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err1) => {
             if (err1) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
@@ -61,7 +61,7 @@ module.exports = {
     remove: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err) => {
             if (err) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
@@ -86,7 +86,7 @@ module.exports = {
     updateInfo: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err) => {
             if (err) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });

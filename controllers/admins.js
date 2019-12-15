@@ -9,7 +9,7 @@ module.exports = {
     create: function (req, res, next) {
         passport.authenticate('jwt', { session: false }, (err, role) => {
             if (role === false) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
@@ -69,7 +69,7 @@ module.exports = {
     list: function (req, res) {
         passport.authenticate('jwt', { session: false }, (err, role) => {
             if (role === false) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
@@ -102,7 +102,7 @@ module.exports = {
     remove: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err, decoded) => {
             if (err || decoded.role === false) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
@@ -137,7 +137,7 @@ module.exports = {
     changePassword: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err, decoded) => {
             if (err || decoded.role === false) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });
@@ -168,7 +168,7 @@ module.exports = {
     updateInfo: function (req, res) {
         jwt.verify(req.headers.secret_token, secretKey.secretKey, (err, decoded) => {
             if (err || decoded.role === false) {
-                return res.status(400).json({
+                return res.status(401).json({
                     status: "failed",
                     message: "Unauthorized",
                 });

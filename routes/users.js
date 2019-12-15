@@ -5,6 +5,7 @@ const userController = require('../controllers/users');
 
 router.get('/tutorslist', userController.list("tutor"));
 router.get('/tutordetail', userController.detail("tutor"));
+router.get('/tutors/contracts', userController.contracts);
 
 router.get('/studentslist', userController.list("student"));
 router.get('/studentdetail', userController.detail("student"));

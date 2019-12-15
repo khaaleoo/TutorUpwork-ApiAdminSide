@@ -11,23 +11,17 @@ var userSchema = mongoose.Schema({
     name: { type: String },
     intro: { type: String },
     price: { type: Number },
-    age: { type: Number },
+    birthday: { type: Date },
     gender: { type: String },
     address: { city: Number, district: Number },
     avatar: { type: String },
     comments: [{ id: String, author: String, content: String, datetime: Date }],
-    contracts: [
-        {
-            id: String,
-            name: String,
-            beginTime: Date,
-            endTime: Date,
-            totalPrice: Number,
-            status: String
-        }
-    ],
+    contracts: [String],
     star: { type: Number },
-    skills: [String]
+    skills: [String],
+    successRate: {
+        type: Number
+    }
 });
 
 const User = mongoose.model('tutor', userSchema);
