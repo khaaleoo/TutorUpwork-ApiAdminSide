@@ -10,6 +10,9 @@ var contractSchema = mongoose.Schema({
     tutorId: {
         type: String
     },
+    skill: {
+        type: String
+    },
     beginTime: {
         type: Date
     },
