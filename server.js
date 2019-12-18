@@ -5,6 +5,7 @@ const index = require('./src/index')
 const admins = require('./routes/admins');
 const skills = require('./routes/skills');
 const users = require('./routes/users');
+const contracts = require('./routes/contracts');
 
 const bodyParser = require('body-parser');
 const mongoose = require('./config/database'); //database configuration
@@ -41,6 +42,7 @@ app.use('/', index);
 app.use('/admins', admins);
 app.use('/skills', skills);
 app.use('/users', users);
+app.use('/contracts', contracts);
 
 // private route
 app.get('/favicon.ico', function (req, res) {
